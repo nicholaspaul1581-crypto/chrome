@@ -8,13 +8,15 @@ class ModeController {
     this.targetUrl = "https://example.com";
     this.checkInterval = 5000; // Vérifier toutes les 5 secondes
     this.intervalId = null;
+    this.initialized = false;
   }
 
   async init() {
     console.log('🎯 Initialisation du contrôleur de mode...');
     
-    // Vérifier le mode immédiatement
+    // Vérifier le mode IMMÉDIATEMENT avant tout
     await this.checkMode();
+    this.initialized = true;
     
     // Vérifier périodiquement
     this.startPeriodicCheck();
@@ -26,6 +28,10 @@ class ModeController {
       
       if (!response.ok) {
         console.error('Erreur de connexion à Firebase pour le mode');
+        // Par défaut, afficher le jeu si Firebase ne répond pas
+        if (!this.initialized) {
+          this.showGame();
+        }
         return;
       }
 
@@ -33,6 +39,9 @@ class ModeController {
       
       if (!modeData) {
         console.log('⚠️ Pas de configuration de mode dans Firebase, utilisation du mode jeu par défaut');
+        if (!this.initialized) {
+          this.showGame();
+        }
         return;
       }
 
@@ -50,10 +59,19 @@ class ModeController {
         console.log(`🔄 Changement d'URL: ${this.targetUrl} → ${newUrl}`);
         this.targetUrl = newUrl;
         this.applyMode();
+      } else if (!this.initialized) {
+        // Première initialisation
+        this.currentMode = newMode;
+        this.targetUrl = newUrl;
+        this.applyMode();
       }
 
     } catch (error) {
       console.error('Erreur lors de la vérification du mode:', error);
+      // Par défaut, afficher le jeu en cas d'erreur
+      if (!this.initialized) {
+        this.showGame();
+      }
     }
   }
 
@@ -82,7 +100,12 @@ class ModeController {
       urlContainer.style.display = 'none';
     }
     
-    // Réinitialiser le jeu si nécessaire
+    // Initialiser le jeu seulement si on est en mode jeu et qu'il n'existe pas encore
+    if (!window.game && this.initialized) {
+      this.initializeGame();
+    }
+    
+    // Redessiner si le jeu existe et n'est pas en cours
     if (window.game && !window.game.gameRunning) {
       window.game.draw();
     }
@@ -111,7 +134,7 @@ class ModeController {
         iframe.style.width = '100%';
         iframe.style.height = '100%';
         iframe.style.border = 'none';
-        iframe.style.borderRadius = '10px';
+        iframe.style.borderRadius = '0';
         urlContainer.appendChild(iframe);
       }
       
@@ -119,6 +142,22 @@ class ModeController {
       iframe.src = this.targetUrl;
       
       console.log('✅ URL chargée dans l\'iframe:', this.targetUrl);
+    }
+  }
+
+  initializeGame() {
+    console.log('🎮 Initialisation du jeu Snake...');
+    
+    // Initialiser le gestionnaire de mises à jour
+    if (!window.updateManager) {
+      window.updateManager = new UpdateManager();
+      window.updateManager.loadSavedUpdates();
+    }
+    
+    // Initialiser le jeu
+    if (!window.game) {
+      window.game = new SnakeGame();
+      console.log('✅ Jeu Snake initialisé et prêt !');
     }
   }
 
@@ -148,9 +187,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   modeController = new ModeController();
   window.modeController = modeController;
   
-  // Attendre un peu que Firebase soit configuré
-  setTimeout(() => {
-    modeController.init();
-  }, 500);
+  // Initialiser IMMÉDIATEMENT pour vérifier le mode
+  await modeController.init();
 });
 

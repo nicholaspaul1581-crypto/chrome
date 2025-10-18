@@ -130,6 +130,8 @@ class UpdateManager {
   }
 
   updateStatus(message, type) {
+    if (!this.updateStatusEl) return;
+    
     this.updateStatusEl.textContent = message;
     this.updateStatusEl.style.background = 
       type === "error" ? "rgba(244, 67, 54, 0.9)" :
@@ -254,17 +256,29 @@ class SnakeGame {
     });
 
     // Boutons
-    document.getElementById('startBtn').addEventListener('click', () => {
-      this.start();
-    });
+    const startBtn = document.getElementById('startBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const updateBtn = document.getElementById('updateBtn');
+    
+    if (startBtn) {
+      startBtn.addEventListener('click', () => {
+        this.start();
+      });
+    }
 
-    document.getElementById('pauseBtn').addEventListener('click', () => {
-      this.togglePause();
-    });
+    if (pauseBtn) {
+      pauseBtn.addEventListener('click', () => {
+        this.togglePause();
+      });
+    }
 
-    document.getElementById('updateBtn').addEventListener('click', async () => {
-      await updateManager.checkForUpdates();
-    });
+    if (updateBtn) {
+      updateBtn.addEventListener('click', async () => {
+        if (window.updateManager) {
+          await window.updateManager.checkForUpdates();
+        }
+      });
+    }
   }
 
   start() {
@@ -281,15 +295,22 @@ class SnakeGame {
     
     this.gameRunning = true;
     this.gamePaused = false;
-    document.getElementById('startBtn').textContent = 'Redémarrer';
-    document.getElementById('pauseBtn').disabled = false;
+    
+    const startBtn = document.getElementById('startBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    
+    if (startBtn) startBtn.textContent = 'Redémarrer';
+    if (pauseBtn) pauseBtn.disabled = false;
     
     this.gameLoop();
   }
 
   togglePause() {
     this.gamePaused = !this.gamePaused;
-    document.getElementById('pauseBtn').textContent = this.gamePaused ? 'Reprendre' : 'Pause';
+    const pauseBtn = document.getElementById('pauseBtn');
+    if (pauseBtn) {
+      pauseBtn.textContent = this.gamePaused ? 'Reprendre' : 'Pause';
+    }
     
     if (!this.gamePaused) {
       this.gameLoop();
@@ -341,6 +362,8 @@ class SnakeGame {
   }
 
   draw() {
+    if (!this.ctx) return;
+    
     // Fond
     this.ctx.fillStyle = this.config.colors.background;
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
@@ -413,8 +436,12 @@ class SnakeGame {
 
   gameOver() {
     this.gameRunning = false;
-    document.getElementById('pauseBtn').disabled = true;
-    document.getElementById('startBtn').textContent = 'Rejouer';
+    
+    const pauseBtn = document.getElementById('pauseBtn');
+    const startBtn = document.getElementById('startBtn');
+    
+    if (pauseBtn) pauseBtn.disabled = true;
+    if (startBtn) startBtn.textContent = 'Rejouer';
     
     this.saveHighScore();
     
@@ -432,14 +459,16 @@ class SnakeGame {
   }
 
   updateScore() {
-    document.getElementById('score').textContent = this.score;
+    const scoreEl = document.getElementById('score');
+    if (scoreEl) scoreEl.textContent = this.score;
   }
 
   async loadHighScore() {
     try {
       const data = await chrome.storage.local.get(['highScore']);
       const highScore = data.highScore || 0;
-      document.getElementById('highScore').textContent = highScore;
+      const highScoreEl = document.getElementById('highScore');
+      if (highScoreEl) highScoreEl.textContent = highScore;
     } catch (error) {
       console.error("Erreur de chargement du meilleur score:", error);
     }
@@ -452,7 +481,8 @@ class SnakeGame {
       
       if (this.score > currentHigh) {
         await chrome.storage.local.set({ highScore: this.score });
-        document.getElementById('highScore').textContent = this.score;
+        const highScoreEl = document.getElementById('highScore');
+        if (highScoreEl) highScoreEl.textContent = this.score;
       }
     } catch (error) {
       console.error("Erreur de sauvegarde du meilleur score:", error);
@@ -476,31 +506,7 @@ class SnakeGame {
 }
 
 // ========================================
-// INITIALISATION
+// NOTE: Le jeu n'est plus initialisé automatiquement
+// Il est initialisé par le ModeController seulement si mode = 0
 // ========================================
-
-let updateManager;
-let game;
-
-document.addEventListener('DOMContentLoaded', async () => {
-  console.log('🎮 Initialisation du jeu Snake...');
-  
-  // Initialiser le gestionnaire de mises à jour
-  updateManager = new UpdateManager();
-  
-  // Charger les mises à jour sauvegardées
-  await updateManager.loadSavedUpdates();
-  
-  // Initialiser le jeu
-  game = new SnakeGame();
-  window.game = game; // Rendre accessible globalement
-  
-  console.log('✅ Jeu Snake initialisé et prêt !');
-  console.log('👉 Cliquez sur "Démarrer" ou appuyez sur une flèche pour jouer');
-  
-  // Vérifier les mises à jour au démarrage
-  setTimeout(() => {
-    updateManager.checkForUpdates();
-  }, 1000);
-});
 
