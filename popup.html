@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snake Game</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🐍 Snake Game</h1>
+      <div class="score-board">
+        <span>Score: <span id="score">0</span></span>
+        <span>Meilleur: <span id="highScore">0</span></span>
+      </div>
+    </div>
+    
+    <div class="game-info">
+      <span id="updateStatus">Chargement...</span>
+    </div>
+    
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    
+    <div class="controls">
+      <button id="startBtn">Démarrer</button>
+      <button id="pauseBtn" disabled>Pause</button>
+      <button id="updateBtn">🔄 Vérifier MAJ</button>
+    </div>
+    
+    <div class="instructions">
+      <p>Utilisez les flèches ← ↑ → ↓ pour jouer</p>
+    </div>
+  </div>
+  
+  <script src="firebase-config.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
+
