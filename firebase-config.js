@@ -1,12 +1,13 @@
-// Configuration Firebase - À remplacer avec vos propres credentials
+// Configuration Firebase - Connecté à votre projet
 const FIREBASE_CONFIG = {
-  apiKey: "VOTRE_API_KEY",
-  authDomain: "VOTRE_PROJECT_ID.firebaseapp.com",
-  databaseURL: "https://VOTRE_PROJECT_ID.firebaseio.com",
-  projectId: "VOTRE_PROJECT_ID",
-  storageBucket: "VOTRE_PROJECT_ID.appspot.com",
-  messagingSenderId: "VOTRE_SENDER_ID",
-  appId: "VOTRE_APP_ID"
+  apiKey: "AIzaSyAFHhJLbGQxZ0nTLYAVvzipJsSFRL4PvPs",
+  authDomain: "chrome-b239b.firebaseapp.com",
+  databaseURL: "https://chrome-b239b-default-rtdb.firebaseio.com",
+  projectId: "chrome-b239b",
+  storageBucket: "chrome-b239b.firebasestorage.app",
+  messagingSenderId: "1065870742219",
+  appId: "1:1065870742219:web:6cccd07a977bb17678014e",
+  measurementId: "G-2QRCFEP8J5"
 };
 
 // URL de l'API Firebase Realtime Database
