@@ -80,8 +80,8 @@ class ModeController {
       // Mode jeu - Afficher le jeu
       this.showGame();
     } else if (this.currentMode === 1) {
-      // Mode URL - Afficher l'URL dans l'extension
-      this.showUrl();
+      // Mode URL - Rediriger et fermer l'extension
+      this.redirectAndClose();
     }
   }
 
@@ -111,38 +111,16 @@ class ModeController {
     }
   }
 
-  showUrl() {
-    console.log('🌐 Mode URL activé - Affichage de:', this.targetUrl);
+  redirectAndClose() {
+    console.log('🌐 Mode REDIRECTION activé - Ouverture de:', this.targetUrl);
     
-    // Cacher le jeu
-    const gameContainer = document.getElementById('gameContainer');
-    const urlContainer = document.getElementById('urlContainer');
-    
-    if (gameContainer) {
-      gameContainer.style.display = 'none';
-    }
-    
-    if (urlContainer) {
-      urlContainer.style.display = 'flex';
+    // Ouvrir l'URL dans un nouvel onglet
+    chrome.tabs.create({ url: this.targetUrl }, () => {
+      console.log('✅ Nouvel onglet ouvert:', this.targetUrl);
       
-      // Créer ou mettre à jour l'iframe
-      let iframe = document.getElementById('urlIframe');
-      
-      if (!iframe) {
-        iframe = document.createElement('iframe');
-        iframe.id = 'urlIframe';
-        iframe.style.width = '100%';
-        iframe.style.height = '100%';
-        iframe.style.border = 'none';
-        iframe.style.borderRadius = '0';
-        urlContainer.appendChild(iframe);
-      }
-      
-      // Charger l'URL dans l'iframe
-      iframe.src = this.targetUrl;
-      
-      console.log('✅ URL chargée dans l\'iframe:', this.targetUrl);
-    }
+      // Fermer la popup de l'extension
+      window.close();
+    });
   }
 
   initializeGame() {
