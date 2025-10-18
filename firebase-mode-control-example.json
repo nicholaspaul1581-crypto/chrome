@@ -1,0 +1,20 @@
+{
+  "mode_control": {
+    "number": 0,
+    "url": "https://example.com"
+  },
+  "game_updates": {
+    "version": "1.0.0",
+    "config": {
+      "gridSize": 20,
+      "gameSpeed": 100,
+      "colors": {
+        "snake": "#4CAF50",
+        "food": "#ff0000",
+        "background": "#1a1a1a",
+        "grid": "#2a2a2a"
+      }
+    }
+  }
+}
+
