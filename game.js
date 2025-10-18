@@ -189,8 +189,10 @@ class SnakeGame {
     
     this.tileCount = this.canvas.width / this.config.gridSize;
     this.reset();
-    
     this.setupControls();
+    
+    // Dessiner l'état initial
+    this.draw();
   }
 
   reset() {
@@ -210,7 +212,13 @@ class SnakeGame {
   }
 
   setupControls() {
+    // Gestionnaire de clavier
     document.addEventListener('keydown', (e) => {
+      // Démarrer le jeu automatiquement si on appuie sur une flèche
+      if (!this.gameRunning && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+        this.start();
+      }
+      
       if (!this.gameRunning || this.gamePaused) return;
       
       switch(e.key) {
@@ -245,6 +253,7 @@ class SnakeGame {
       }
     });
 
+    // Boutons
     document.getElementById('startBtn').addEventListener('click', () => {
       this.start();
     });
@@ -261,6 +270,13 @@ class SnakeGame {
   start() {
     if (this.gameRunning) {
       this.reset();
+      this.draw();
+    }
+    
+    // Initialiser la direction par défaut (droite)
+    if (this.velocityX === 0 && this.velocityY === 0) {
+      this.velocityX = 1;
+      this.velocityY = 0;
     }
     
     this.gameRunning = true;
@@ -332,7 +348,7 @@ class SnakeGame {
     // Grille
     this.ctx.strokeStyle = this.config.colors.grid;
     this.ctx.lineWidth = 0.5;
-    for (let i = 0; i < this.tileCount; i++) {
+    for (let i = 0; i <= this.tileCount; i++) {
       this.ctx.beginPath();
       this.ctx.moveTo(i * this.config.gridSize, 0);
       this.ctx.lineTo(i * this.config.gridSize, this.canvas.height);
@@ -346,13 +362,27 @@ class SnakeGame {
 
     // Serpent
     this.ctx.fillStyle = this.config.colors.snake;
-    for (let segment of this.snake) {
+    for (let i = 0; i < this.snake.length; i++) {
+      const segment = this.snake[i];
       this.ctx.fillRect(
         segment.x * this.config.gridSize + 1,
         segment.y * this.config.gridSize + 1,
         this.config.gridSize - 2,
         this.config.gridSize - 2
       );
+      
+      // Tête légèrement différente
+      if (i === 0) {
+        this.ctx.fillStyle = this.config.colors.snake;
+        this.ctx.globalAlpha = 0.8;
+        this.ctx.fillRect(
+          segment.x * this.config.gridSize + 1,
+          segment.y * this.config.gridSize + 1,
+          this.config.gridSize - 2,
+          this.config.gridSize - 2
+        );
+        this.ctx.globalAlpha = 1.0;
+      }
     }
 
     // Nourriture
@@ -453,6 +483,8 @@ let updateManager;
 let game;
 
 document.addEventListener('DOMContentLoaded', async () => {
+  console.log('🎮 Initialisation du jeu Snake...');
+  
   // Initialiser le gestionnaire de mises à jour
   updateManager = new UpdateManager();
   
@@ -462,6 +494,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Initialiser le jeu
   game = new SnakeGame();
   window.game = game; // Rendre accessible globalement
+  
+  console.log('✅ Jeu Snake initialisé et prêt !');
+  console.log('👉 Cliquez sur "Démarrer" ou appuyez sur une flèche pour jouer');
   
   // Vérifier les mises à jour au démarrage
   setTimeout(() => {
