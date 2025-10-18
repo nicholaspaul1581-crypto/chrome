@@ -34,14 +34,15 @@
     </div>
   </div>
 
-  <!-- Conteneur URL (mode 1) - Affichage direct dans iframe -->
+  <!-- Conteneur URL (mode 1) - Redirection automatique -->
   <div id="urlContainer" class="url-container" style="display: none;">
-    <!-- L'iframe sera injecté ici par JavaScript -->
+    <p>Redirection en cours...</p>
   </div>
   
+  <!-- Charger les scripts dans le bon ordre -->
   <script src="firebase-config.js"></script>
-  <script src="mode-controller.js"></script>
   <script src="game.js"></script>
+  <script src="mode-controller.js"></script>
 </body>
 </html>
 
