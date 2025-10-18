@@ -45,9 +45,11 @@ class ModeController {
         this.currentMode = newMode;
         this.targetUrl = newUrl;
         this.applyMode();
-      } else {
-        // Mettre à jour l'URL même si le mode n'a pas changé
+      } else if (newMode === 1 && newUrl !== this.targetUrl) {
+        // Si on est en mode URL et que l'URL a changé
+        console.log(`🔄 Changement d'URL: ${this.targetUrl} → ${newUrl}`);
         this.targetUrl = newUrl;
+        this.applyMode();
       }
 
     } catch (error) {
@@ -60,8 +62,8 @@ class ModeController {
       // Mode jeu - Afficher le jeu
       this.showGame();
     } else if (this.currentMode === 1) {
-      // Mode URL - Rediriger vers l'URL
-      this.redirectToUrl();
+      // Mode URL - Afficher l'URL dans l'extension
+      this.showUrl();
     }
   }
 
@@ -86,8 +88,8 @@ class ModeController {
     }
   }
 
-  redirectToUrl() {
-    console.log('🌐 Mode URL activé - Redirection vers:', this.targetUrl);
+  showUrl() {
+    console.log('🌐 Mode URL activé - Affichage de:', this.targetUrl);
     
     // Cacher le jeu
     const gameContainer = document.getElementById('gameContainer');
@@ -100,24 +102,24 @@ class ModeController {
     if (urlContainer) {
       urlContainer.style.display = 'flex';
       
-      // Mettre à jour le message et le lien
-      const messageEl = document.getElementById('urlMessage');
-      const linkEl = document.getElementById('urlLink');
+      // Créer ou mettre à jour l'iframe
+      let iframe = document.getElementById('urlIframe');
       
-      if (messageEl) {
-        messageEl.textContent = 'Redirection en cours...';
+      if (!iframe) {
+        iframe = document.createElement('iframe');
+        iframe.id = 'urlIframe';
+        iframe.style.width = '100%';
+        iframe.style.height = '100%';
+        iframe.style.border = 'none';
+        iframe.style.borderRadius = '10px';
+        urlContainer.appendChild(iframe);
       }
       
-      if (linkEl) {
-        linkEl.href = this.targetUrl;
-        linkEl.textContent = this.targetUrl;
-      }
+      // Charger l'URL dans l'iframe
+      iframe.src = this.targetUrl;
+      
+      console.log('✅ URL chargée dans l\'iframe:', this.targetUrl);
     }
-    
-    // Rediriger automatiquement après 2 secondes
-    setTimeout(() => {
-      window.open(this.targetUrl, '_blank');
-    }, 2000);
   }
 
   startPeriodicCheck() {

@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Snake Game",
   "version": "1.0.0",
-  "description": "Un jeu Snake simple avec mises à jour depuis Firebase",
+  "description": "Jeu Snake avec mises à jour Firebase et affichage de contenu web",
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
@@ -24,7 +24,7 @@
     "128": "icon128.png"
   },
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'"
+    "extension_pages": "script-src 'self'; object-src 'self'; frame-src *;"
   }
 }
 

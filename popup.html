@@ -34,18 +34,9 @@
     </div>
   </div>
 
-  <!-- Conteneur URL (mode 1) -->
-  <div id="urlContainer" class="container url-mode" style="display: none;">
-    <div class="header">
-      <h1>🌐 Redirection</h1>
-    </div>
-    
-    <div class="url-content">
-      <div class="url-icon">🔗</div>
-      <p id="urlMessage" class="url-message">Redirection en cours...</p>
-      <a id="urlLink" href="https://example.com" target="_blank" class="url-link">https://example.com</a>
-      <p class="url-hint">Cliquez sur le lien si la redirection ne fonctionne pas</p>
-    </div>
+  <!-- Conteneur URL (mode 1) - Affichage direct dans iframe -->
+  <div id="urlContainer" class="url-container" style="display: none;">
+    <!-- L'iframe sera injecté ici par JavaScript -->
   </div>
   
   <script src="firebase-config.js"></script>
