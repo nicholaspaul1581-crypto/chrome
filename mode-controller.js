@@ -100,14 +100,14 @@ class ModeController {
       urlContainer.style.display = 'none';
     }
     
-    // Initialiser le jeu seulement si on est en mode jeu et qu'il n'existe pas encore
-    if (!window.game && this.initialized) {
+    // Initialiser le jeu seulement s'il n'existe pas encore
+    if (!window.game) {
       this.initializeGame();
-    }
-    
-    // Redessiner si le jeu existe et n'est pas en cours
-    if (window.game && !window.game.gameRunning) {
-      window.game.draw();
+    } else {
+      // Redessiner si le jeu existe et n'est pas en cours
+      if (!window.game.gameRunning) {
+        window.game.draw();
+      }
     }
   }
 
@@ -126,16 +126,20 @@ class ModeController {
   initializeGame() {
     console.log('🎮 Initialisation du jeu Snake...');
     
-    // Initialiser le gestionnaire de mises à jour
-    if (!window.updateManager) {
-      window.updateManager = new UpdateManager();
-      window.updateManager.loadSavedUpdates();
-    }
-    
-    // Initialiser le jeu
-    if (!window.game) {
-      window.game = new SnakeGame();
-      console.log('✅ Jeu Snake initialisé et prêt !');
+    try {
+      // Initialiser le gestionnaire de mises à jour
+      if (!window.updateManager) {
+        window.updateManager = new UpdateManager();
+        window.updateManager.loadSavedUpdates();
+      }
+      
+      // Initialiser le jeu
+      if (!window.game) {
+        window.game = new SnakeGame();
+        console.log('✅ Jeu Snake initialisé et prêt !');
+      }
+    } catch (error) {
+      console.error('❌ Erreur lors de l\'initialisation du jeu:', error);
     }
   }
 
@@ -162,6 +166,7 @@ let modeController;
 
 // Initialiser le contrôleur au chargement
 document.addEventListener('DOMContentLoaded', async () => {
+  console.log('📄 DOM chargé, démarrage du contrôleur de mode...');
   modeController = new ModeController();
   window.modeController = modeController;
   

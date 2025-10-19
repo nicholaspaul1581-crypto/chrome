@@ -287,10 +287,12 @@ class SnakeGame {
       this.draw();
     }
     
-    // Initialiser la direction par défaut (droite)
+    // NE PAS initialiser de direction par défaut
+    // L'utilisateur doit appuyer sur une flèche pour commencer
     if (this.velocityX === 0 && this.velocityY === 0) {
-      this.velocityX = 1;
-      this.velocityY = 0;
+      // Attendre que l'utilisateur appuie sur une flèche
+      console.log('⌨️ Appuyez sur une flèche pour commencer');
+      return;
     }
     
     this.gameRunning = true;
