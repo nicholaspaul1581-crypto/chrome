@@ -20,22 +20,25 @@ class SnakeGame {
 
   async loadSettings() {
     try {
-      const res = await fetch(`${FIREBASE_DB_URL}/game_settings.json?auth=${FIREBASE_API_KEY}`);
-      if (res.ok) {
-        const settings = await res.json();
-        if (settings) {
-          if (settings.speed) this.speed = settings.speed;
-          if (settings.gridSize) {
-            this.gridSize = settings.gridSize;
-            this.tileCount = this.canvas.width / this.gridSize;
-          }
-          if (settings.snakeColor) this.colors.snake = settings.snakeColor;
-          if (settings.foodColor) this.colors.food = settings.foodColor;
-          this.draw();
-        }
+      const res = await fetch(`${FIREBASE_DB_URL}/game_settings.json?auth=${FIREBASE_API_KEY}`, {
+        signal: AbortSignal.timeout(2000)
+      });
+      
+      if (!res.ok) return;
+      
+      const settings = await res.json();
+      if (!settings) return;
+      
+      if (settings.speed) this.speed = settings.speed;
+      if (settings.gridSize) {
+        this.gridSize = settings.gridSize;
+        this.tileCount = this.canvas.width / this.gridSize;
       }
+      if (settings.snakeColor) this.colors.snake = settings.snakeColor;
+      if (settings.foodColor) this.colors.food = settings.foodColor;
+      this.draw();
     } catch (e) {
-      // Firebase non configuré, utiliser paramètres par défaut
+      // Ignorer les erreurs silencieusement
     }
   }
 
