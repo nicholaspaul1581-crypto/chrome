@@ -233,11 +233,23 @@ class SnakeGame {
   }
 }
 
-// Initialiser le jeu seulement si le container est visible
-setTimeout(() => {
-  const gameContainer = document.getElementById('gameContainer');
-  if (gameContainer && gameContainer.style.display !== 'none') {
-    window.game = new SnakeGame();
-  }
-}, 100);
+// Initialiser le jeu quand le DOM est prêt
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initGame);
+} else {
+  initGame();
+}
+
+function initGame() {
+  // Attendre que le mode controller ait fini
+  const checkAndInit = () => {
+    const gameContainer = document.getElementById('gameContainer');
+    if (gameContainer && gameContainer.style.display !== 'none') {
+      window.game = new SnakeGame();
+    }
+  };
+  
+  // Vérifier après un court délai
+  setTimeout(checkAndInit, 200);
+}
 
