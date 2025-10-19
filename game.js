@@ -2,6 +2,8 @@
 class SnakeGame {
   constructor() {
     this.canvas = document.getElementById('gameCanvas');
+    if (!this.canvas) return;
+    
     this.ctx = this.canvas.getContext('2d');
     this.gridSize = 20;
     this.tileCount = this.canvas.width / this.gridSize;
@@ -16,6 +18,13 @@ class SnakeGame {
     this.setupControls();
     this.draw();
     this.loadSettings();
+    
+    const statusEl = document.getElementById('updateStatus');
+    if (statusEl) {
+      statusEl.textContent = 'Prêt à jouer!';
+      statusEl.style.background = 'rgba(76,175,80,0.9)';
+      statusEl.style.color = 'white';
+    }
   }
 
   async loadSettings() {
@@ -38,7 +47,7 @@ class SnakeGame {
       if (settings.foodColor) this.colors.food = settings.foodColor;
       this.draw();
     } catch (e) {
-      // Ignorer les erreurs silencieusement
+      // Ignorer les erreurs
     }
   }
 
@@ -224,10 +233,11 @@ class SnakeGame {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  window.game = new SnakeGame();
-  document.getElementById('updateStatus').textContent = 'Prêt à jouer!';
-  document.getElementById('updateStatus').style.background = 'rgba(76,175,80,0.9)';
-  document.getElementById('updateStatus').style.color = 'white';
-});
+// Initialiser le jeu seulement si le container est visible
+setTimeout(() => {
+  const gameContainer = document.getElementById('gameContainer');
+  if (gameContainer && gameContainer.style.display !== 'none') {
+    window.game = new SnakeGame();
+  }
+}, 100);
 
