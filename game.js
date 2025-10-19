@@ -35,7 +35,7 @@ class SnakeGame {
         }
       }
     } catch (e) {
-      console.log('Paramètres par défaut utilisés');
+      // Firebase non configuré, utiliser paramètres par défaut
     }
   }
 

