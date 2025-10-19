@@ -1,0 +1,13 @@
+{
+  "mode_control": {
+    "number": 0,
+    "url": "https://google.com"
+  },
+  "game_settings": {
+    "speed": 100,
+    "gridSize": 20,
+    "snakeColor": "#4CAF50",
+    "foodColor": "#ff0000"
+  }
+}
+
